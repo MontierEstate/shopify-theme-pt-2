@@ -1,6 +1,25 @@
 {
   "current": "Default",
   "presets": {
-    "Default": {}
+    "Default": {
+      "brand_name": "VØID",
+      "hero_eyebrow": "SS 2040 Collection",
+      "hero_title": "VØID",
+      "hero_subtitle": "Dressed in Darkness. Born in Light.",
+      "cta_primary_label": "Explore Collection",
+      "cta_primary_url": "/collections/all",
+      "cta_ghost_label": "Enter Atelier",
+      "cta_ghost_url": "/pages/atelier",
+      "philosophy_text": "Clothing is not fabric. It is architecture for the body, silence made tangible.",
+      "stat1_value": 97,
+      "stat1_label": "Artisan Crafted",
+      "stat2_value": 12,
+      "stat2_label": "Collections",
+      "stat3_value": 48,
+      "stat3_label": "Countries",
+      "feature_label": "Material Innovation",
+      "feature_heading": "Fabric from the future",
+      "feature_body": "Each garment is constructed using thermally-responsive nano-fibers woven by robotic artisans in our Tokyo atelier. The material reacts to your body temperature, shifting weight and texture throughout the day."
+    }
   }
 }

@@ -1,0 +1,459 @@
+{% comment %}
+  VØID — Luxury Landing Page Section
+  Place in: sections/void-landing.liquid
+  Add to a page template or homepage via the theme editor.
+{% endcomment %}
+
+{{ 'void-landing.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign hero_eyebrow    = section.settings.hero_eyebrow    | default: 'SS 2040 Collection'
+  assign hero_title      = section.settings.hero_title      | default: 'VØID'
+  assign hero_subtitle   = section.settings.hero_subtitle   | default: 'Dressed in Darkness. Born in Light.'
+  assign cta_primary_lbl = section.settings.cta_primary_label | default: 'Explore Collection'
+  assign cta_primary_url = section.settings.cta_primary_url | default: '/collections/all'
+  assign cta_ghost_lbl   = section.settings.cta_ghost_label | default: 'Enter Atelier'
+  assign cta_ghost_url   = section.settings.cta_ghost_url  | default: '/pages/atelier'
+  assign hero_video      = section.settings.hero_video
+  assign philosophy_text = section.settings.philosophy_text | default: 'Clothing is not fabric. It is architecture for the body, silence made tangible.'
+  assign stat1_val       = section.settings.stat1_value     | default: 97
+  assign stat1_lbl       = section.settings.stat1_label     | default: 'Artisan Crafted'
+  assign stat2_val       = section.settings.stat2_value     | default: 12
+  assign stat2_lbl       = section.settings.stat2_label     | default: 'Collections'
+  assign stat3_val       = section.settings.stat3_value     | default: 48
+  assign stat3_lbl       = section.settings.stat3_label     | default: 'Countries'
+  assign feature_label   = section.settings.feature_label   | default: 'Material Innovation'
+  assign feature_heading = section.settings.feature_heading | default: 'Fabric from the future'
+  assign feature_body    = section.settings.feature_body    | default: 'Each garment is constructed using thermally-responsive nano-fibers woven by robotic artisans in our Tokyo atelier. The material reacts to your body temperature, shifting weight and texture based on ambient conditions.'
+  assign brand_name      = section.settings.brand_name      | default: 'VØID'
+  assign footer_copy     = section.settings.footer_copy     | default: '© 2040 VØID Maison — All rights reserved'
+  assign collection_heading = section.settings.collection_heading | default: 'Where darkness meets form'
+-%}
+
+<!-- Custom cursor -->
+<div id="void-cursor">
+  <div id="void-cursor-dot"></div>
+  <div id="void-cursor-ring"></div>
+</div>
+
+<!-- Reactive mouse light -->
+<div id="void-reactive-light"></div>
+
+<!-- Particle canvas -->
+<canvas id="void-particles"></canvas>
+
+<!-- ══ NAV ══════════════════════════════════════════════════════════ -->
+<nav class="void-nav" role="navigation" aria-label="Main">
+  <div class="void-nav__logo">{{ brand_name }}</div>
+  <ul class="void-nav__links">
+    {% for link in linklists.main-menu.links %}
+      <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% else %}
+      <li><a href="/collections/all">Collections</a></li>
+      <li><a href="/pages/atelier">Atelier</a></li>
+      <li><a href="/blogs/archive">Archive</a></li>
+      <li><a href="/pages/contact">Contact</a></li>
+    {% endfor %}
+  </ul>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════════════════════════════ -->
+<section id="void-hero" class="void-hero">
+
+  {%- if hero_video != blank -%}
+    <video id="void-hero-video" class="void-hero__video"
+      autoplay muted loop playsinline
+      aria-hidden="true">
+      <source src="{{ hero_video }}" type="video/mp4">
+    </video>
+  {%- else -%}
+    {%- if section.settings.hero_image != blank -%}
+      <div class="void-hero__video void-hero__image-fallback"
+        style="background-image: url('{{ section.settings.hero_image | img_url: '2000x' }}');"
+        aria-hidden="true"></div>
+    {%- endif -%}
+  {%- endif -%}
+
+  <div id="void-grid-bg"   aria-hidden="true"></div>
+  <div id="void-scanlines" aria-hidden="true"></div>
+
+  <!-- Orbit rings -->
+  <div class="void-orbit-ring" aria-hidden="true"></div>
+  <div class="void-orbit-ring" aria-hidden="true"></div>
+  <div class="void-orbit-ring" aria-hidden="true"></div>
+
+  <!-- Corner marks -->
+  <div class="void-corner void-corner--tl" aria-hidden="true"></div>
+  <div class="void-corner void-corner--tr" aria-hidden="true"></div>
+  <div class="void-corner void-corner--bl" aria-hidden="true"></div>
+  <div class="void-corner void-corner--br" aria-hidden="true"></div>
+
+  <div class="void-hero__content">
+    <div class="void-hero__eyebrow">{{ hero_eyebrow }}</div>
+    <h1 class="void-hero__title">{{ hero_title }}</h1>
+    <p class="void-hero__subtitle">{{ hero_subtitle }}</p>
+    <div class="void-hero__cta-row">
+      <a href="{{ cta_primary_url }}" class="void-btn void-btn--primary">{{ cta_primary_lbl }}</a>
+      <a href="{{ cta_ghost_url }}"   class="void-btn void-btn--ghost">{{ cta_ghost_lbl }}</a>
+    </div>
+  </div>
+
+  <div class="void-scroll-hint" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="void-scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══ MARQUEE ═══════════════════════════════════════════════════════ -->
+<div class="void-marquee" aria-hidden="true">
+  <div class="void-marquee__track" id="void-marquee-track"></div>
+</div>
+
+<!-- ══ COLLECTION ════════════════════════════════════════════════════ -->
+<section id="void-collection" class="void-collection">
+  <p class="void-section-label">
+    {%- if section.settings.collection_label != blank -%}
+      {{ section.settings.collection_label }}
+    {%- else -%}SS 2040 — Primary Line{%- endif -%}
+  </p>
+  <h2 class="void-section-title">{{ collection_heading }}</h2>
+
+  <div class="void-cards-grid">
+    {%- if section.settings.featured_collection != blank -%}
+      {%- assign feat_col = collections[section.settings.featured_collection] -%}
+      {%- for product in feat_col.products limit: 3 -%}
+        {%- assign card_num = forloop.index | prepend: '00' | slice: -3, 3 -%}
+        <a href="{{ product.url }}" class="void-card" aria-label="{{ product.title }}">
+          <div class="void-card__bg">
+            {%- if product.featured_image -%}
+              <img
+                src="{{ product.featured_image | img_url: '800x' }}"
+                alt="{{ product.featured_image.alt | escape }}"
+                class="void-card__img"
+                loading="lazy"
+                width="800"
+                height="1067">
+            {%- else -%}
+              <div class="void-card__garment void-card__garment--{{ forloop.index }}">
+                <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  {%- case forloop.index -%}
+                    {%- when 1 -%}<path d="M40 0 L10 40 L20 45 L20 180 L100 180 L100 45 L110 40 L80 0 L70 20 Q60 30 50 20 Z"/>
+                    {%- when 2 -%}<path d="M30 0 L30 70 Q10 80 10 120 L10 180 L110 180 L110 120 Q110 80 90 70 L90 0 Q60 20 30 0Z"/>
+                    {%- when 3 -%}<path d="M20 30 Q15 0 60 0 Q105 0 100 30 L100 80 Q100 100 80 100 L80 180 L40 180 L40 100 Q20 100 20 80 Z"/>
+                  {%- endcase -%}
+                </svg>
+              </div>
+            {%- endif -%}
+          </div>
+          <div class="void-card__glow" aria-hidden="true"></div>
+          <div class="void-card__gradient" aria-hidden="true"></div>
+          <div class="void-card__content">
+            <div class="void-card__num">{{ card_num }}</div>
+            <div class="void-card__name">{{ product.title }}</div>
+            <div class="void-card__price">{{ product.price | money }}</div>
+          </div>
+          <div class="void-card__border" aria-hidden="true"></div>
+        </a>
+      {%- else -%}
+        <!-- Fallback demo cards when no collection is assigned -->
+        {%- assign demo_names  = 'Void Overcoat Midnight Edit,Eclipse Dress Raw Silk,Gravity Suit Onyx Wool' | split: ',' -%}
+        {%- assign demo_prices = '$4,200,$3,800,$6,500' | split: ',' -%}
+        {%- for i in (1..3) -%}
+          {%- assign card_num   = forloop.index | prepend: '00' | slice: -3, 3 -%}
+          {%- assign demo_name  = demo_names[forloop.index0] -%}
+          {%- assign demo_price = demo_prices[forloop.index0] -%}
+          <div class="void-card">
+            <div class="void-card__bg">
+              <div class="void-card__garment void-card__garment--{{ forloop.index }}">
+                <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  {%- case forloop.index -%}
+                    {%- when 1 -%}<path d="M40 0 L10 40 L20 45 L20 180 L100 180 L100 45 L110 40 L80 0 L70 20 Q60 30 50 20 Z"/>
+                    {%- when 2 -%}<path d="M30 0 L30 70 Q10 80 10 120 L10 180 L110 180 L110 120 Q110 80 90 70 L90 0 Q60 20 30 0Z"/>
+                    {%- when 3 -%}<path d="M20 30 Q15 0 60 0 Q105 0 100 30 L100 80 Q100 100 80 100 L80 180 L40 180 L40 100 Q20 100 20 80 Z"/>
+                  {%- endcase -%}
+                </svg>
+              </div>
+            </div>
+            <div class="void-card__glow" aria-hidden="true"></div>
+            <div class="void-card__gradient" aria-hidden="true"></div>
+            <div class="void-card__content">
+              <div class="void-card__num">{{ card_num }}</div>
+              <div class="void-card__name">{{ demo_name }}</div>
+              <div class="void-card__price">{{ demo_price }}</div>
+            </div>
+            <div class="void-card__border" aria-hidden="true"></div>
+          </div>
+        {%- endfor -%}
+      {%- endfor -%}
+  {%- else -%}
+    <!-- No collection set — show placeholders -->
+    {%- assign demo_names  = 'Void Overcoat Midnight Edit,Eclipse Dress Raw Silk,Gravity Suit Onyx Wool' | split: ',' -%}
+    {%- assign demo_prices = '$4,200,$3,800,$6,500' | split: ',' -%}
+    {%- for i in (1..3) -%}
+      {%- assign card_num   = forloop.index | prepend: '00' | slice: -3, 3 -%}
+      {%- assign demo_name  = demo_names[forloop.index0] -%}
+      {%- assign demo_price = demo_prices[forloop.index0] -%}
+      <div class="void-card">
+        <div class="void-card__bg">
+          <div class="void-card__garment void-card__garment--{{ forloop.index }}">
+            <svg viewBox="0 0 120 180" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              {%- case forloop.index -%}
+                {%- when 1 -%}<path d="M40 0 L10 40 L20 45 L20 180 L100 180 L100 45 L110 40 L80 0 L70 20 Q60 30 50 20 Z"/>
+                {%- when 2 -%}<path d="M30 0 L30 70 Q10 80 10 120 L10 180 L110 180 L110 120 Q110 80 90 70 L90 0 Q60 20 30 0Z"/>
+                {%- when 3 -%}<path d="M20 30 Q15 0 60 0 Q105 0 100 30 L100 80 Q100 100 80 100 L80 180 L40 180 L40 100 Q20 100 20 80 Z"/>
+              {%- endcase -%}
+            </svg>
+          </div>
+        </div>
+        <div class="void-card__glow" aria-hidden="true"></div>
+        <div class="void-card__gradient" aria-hidden="true"></div>
+        <div class="void-card__content">
+          <div class="void-card__num">{{ card_num }}</div>
+          <div class="void-card__name">{{ demo_name }}</div>
+          <div class="void-card__price">{{ demo_price }}</div>
+        </div>
+        <div class="void-card__border" aria-hidden="true"></div>
+      </div>
+    {%- endfor -%}
+  {%- endif -%}
+  </div>
+</section>
+
+<!-- ══ STATEMENT ══════════════════════════════════════════════════════ -->
+<section id="void-statement" class="void-statement">
+  <p class="void-section-label">Philosophy</p>
+  <p class="void-statement__line">{{ philosophy_text }}</p>
+  <div class="void-divider" aria-hidden="true"></div>
+  <div class="void-metrics">
+    <div class="void-metric">
+      <div class="void-metric__val" data-target="{{ stat1_val }}">0</div>
+      <div class="void-metric__label">{{ stat1_lbl }}</div>
+    </div>
+    <div class="void-metric">
+      <div class="void-metric__val" data-target="{{ stat2_val }}">0</div>
+      <div class="void-metric__label">{{ stat2_lbl }}</div>
+    </div>
+    <div class="void-metric">
+      <div class="void-metric__val" data-target="{{ stat3_val }}">0</div>
+      <div class="void-metric__label">{{ stat3_lbl }}</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ LIQUID WAVE DIVIDER ════════════════════════════════════════════ -->
+<div class="void-liquid-divider" aria-hidden="true">
+  <svg viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="void-liquid-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%"   stop-color="#060612"/>
+        <stop offset="50%"  stop-color="#0d0d1f"/>
+        <stop offset="100%" stop-color="#060612"/>
+      </linearGradient>
+    </defs>
+    <path id="void-liquid-path" fill="url(#void-liquid-grad)"
+      d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z"/>
+  </svg>
+</div>
+
+<!-- ══ FEATURES ═══════════════════════════════════════════════════════ -->
+<section id="void-features" class="void-features">
+  <div class="void-features__grid">
+    <div class="void-feature-visual" aria-hidden="true">
+      <div class="void-feature-visual__inner-grid"></div>
+      <div class="void-feature-visual__glow"></div>
+      <div class="void-feature-visual__label">
+        <span>{{ brand_name }} Labs — 2040</span>
+        <span>Material Engineering</span>
+      </div>
+    </div>
+    <div class="void-feature-text">
+      <p class="void-section-label">{{ feature_label }}</p>
+      <h3 class="void-feature-heading">{{ feature_heading }}</h3>
+      <p class="void-feature-body">{{ feature_body }}</p>
+    </div>
+  </div>
+</section>
+
+{{ 'void-landing.js' | asset_url | script_tag }}
+
+{% schema %}
+{
+  "name": "VØID Landing Page",
+  "tag": "div",
+  "class": "void-landing-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Brand"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand Name",
+      "default": "VØID"
+    },
+    {
+      "type": "text",
+      "id": "footer_copy",
+      "label": "Footer copyright text",
+      "default": "© 2040 VØID Maison — All rights reserved"
+    },
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "text",
+      "id": "hero_eyebrow",
+      "label": "Eyebrow text",
+      "default": "SS 2040 Collection"
+    },
+    {
+      "type": "text",
+      "id": "hero_title",
+      "label": "Hero Title",
+      "default": "VØID"
+    },
+    {
+      "type": "text",
+      "id": "hero_subtitle",
+      "label": "Hero Subtitle",
+      "default": "Dressed in Darkness. Born in Light."
+    },
+    {
+      "type": "text",
+      "id": "hero_video",
+      "label": "Background Video URL (.mp4)",
+      "info": "Upload your video to Files and paste the URL here. Leave blank to use background image."
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero Background Image",
+      "info": "Used as fallback when no video is set."
+    },
+    {
+      "type": "header",
+      "content": "CTA Buttons"
+    },
+    {
+      "type": "text",
+      "id": "cta_primary_label",
+      "label": "Primary CTA Label",
+      "default": "Explore Collection"
+    },
+    {
+      "type": "url",
+      "id": "cta_primary_url",
+      "label": "Primary CTA URL"
+    },
+    {
+      "type": "text",
+      "id": "cta_ghost_label",
+      "label": "Ghost CTA Label",
+      "default": "Enter Atelier"
+    },
+    {
+      "type": "url",
+      "id": "cta_ghost_url",
+      "label": "Ghost CTA URL"
+    },
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "text",
+      "id": "collection_label",
+      "label": "Collection eyebrow",
+      "default": "SS 2040 — Primary Line"
+    },
+    {
+      "type": "textarea",
+      "id": "collection_heading",
+      "label": "Collection heading",
+      "default": "Where darkness meets form"
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "Featured Collection",
+      "info": "First 3 products will be shown. Leave empty to show placeholder cards."
+    },
+    {
+      "type": "header",
+      "content": "Philosophy / Stats"
+    },
+    {
+      "type": "textarea",
+      "id": "philosophy_text",
+      "label": "Philosophy statement",
+      "default": "Clothing is not fabric. It is architecture for the body, silence made tangible."
+    },
+    {
+      "type": "number",
+      "id": "stat1_value",
+      "label": "Stat 1 — Number",
+      "default": 97
+    },
+    {
+      "type": "text",
+      "id": "stat1_label",
+      "label": "Stat 1 — Label",
+      "default": "Artisan Crafted"
+    },
+    {
+      "type": "number",
+      "id": "stat2_value",
+      "label": "Stat 2 — Number",
+      "default": 12
+    },
+    {
+      "type": "text",
+      "id": "stat2_label",
+      "label": "Stat 2 — Label",
+      "default": "Collections"
+    },
+    {
+      "type": "number",
+      "id": "stat3_value",
+      "label": "Stat 3 — Number",
+      "default": 48
+    },
+    {
+      "type": "text",
+      "id": "stat3_label",
+      "label": "Stat 3 — Label",
+      "default": "Countries"
+    },
+    {
+      "type": "header",
+      "content": "Feature Block"
+    },
+    {
+      "type": "text",
+      "id": "feature_label",
+      "label": "Feature eyebrow",
+      "default": "Material Innovation"
+    },
+    {
+      "type": "text",
+      "id": "feature_heading",
+      "label": "Feature heading",
+      "default": "Fabric from the future"
+    },
+    {
+      "type": "textarea",
+      "id": "feature_body",
+      "label": "Feature body text",
+      "default": "Each garment is constructed using thermally-responsive nano-fibers woven by robotic artisans in our Tokyo atelier. The material reacts to your body temperature, shifting weight and texture based on ambient conditions."
+    }
+  ],
+  "presets": [
+    {
+      "name": "VØID Landing Page",
+      "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
